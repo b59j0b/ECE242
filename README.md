@@ -1,1 +1,35 @@
-# ECE242
+java c
+ECE-242 Applied Feedback Controls 
+Homework   7 
+Winter   2025 
+Background Initially,   this   is   the   point   in   the   class   where   I   would   send   you   into   the   lab   to   learn   how   to   control   a   real   mechanical   experiment   (inverted   pendulum,   three   disk   set,   caged   fan,   etc.).    The   problem   here   is   that   the   hardware has gotten so good, that essentially these now all boil down to playing with Simulink and MATLAB.   If I   put   you   on   bad   hardware,   then   you   spend   most   of your   time   debugging   the   bad   hardware    (something   which I am sure you are   all   going   to   do   later   in   your   careers   anyway).   So,   instead,   I’ve   got   a   simulink   model   for   you   to   play   with. This   is   a   full, realistic   control   design   exercise—it   is   open   ended, the   more   you   put   in, the more   you   get   out.
+Figure 1: Odyssey Spacecraft 
+0 
+Attitude Stabilization of a 1-D satellite Very   often   in   satellite/space   ship   design, you   wind   up   putting   the   big   heavy   things   (engines,   etc)   on   one   end,   and   the   sensitive   sensors   on   the   other   end,   and because you   don’t have   to   support   the weight   (microgravity   environment),   you   use   a   slender   flexible   truss   to   move   them   apart.    We   model   the   torsion   stages   as   three inertias connected by two torsional springs. To make matters   more   difficult,   the   thrusters   that   can   torque   the   satellite   are   connected   to   the   aft   stage,   not   to   the   front where   the   sensors   are.   You   do   get   a   star   tracker   on each   stage which   gives you very high   quality   rotational   attitude   information   on   the   fore   and   aft   stages   (but   not in the   middle).
+1 
+Collocated Control 
+The   rotational   dynamics   of the   entire   satellite   system,   aft   thrusters   to   aft   angle,   can   be   represented   by   the   following transfer function   (this is the easy   one):
+
+where:
+
+Now, having   done   our   previous   simple   designs, let’s   explore   the   design   space   a   bit:
+a)      Go   back   to   your   design   D1   (s), from   HW   6(a), and   re-implement   it   discretely   (with   Tustin) using   slower and   slower   sample   rates.   Remember,   D1   (z) will   change   every   time   you   change   the   sample   rate.    How slow   can   you   go   before   performance   breaks   down?
+b)      Simulate   your designs   using   the simulink   model   DiscoveryAftDiscrete.mdl   from   the CANVAS   website,   and   overplot   the   step   responses   against   your   original   continuous   time   response. Use   either   stair   or   stem command to plot the digital   response.
+c)    Explain   why   the   performance   degrades   as   the   sample   time   gets   slower.   Be   specific,   calculate   the   actual phase   loss.
+d)      Compute the   ZOH   equivalent   of the transfer function,   Gaft   (s),   and try   to   design   D1   (z)   directly   in   the   z-domain.   Compare   the   performance   against   the   D(z)’s   that   you   got   above   in   part   (a).   You   should   be able   to   achieve   good   performance   at   much   lower   sample   rates.
+2 
+Non-Collocated Control When you   did   the   control   above,   the   output   sensor   and   the   actuator were   in   the   same   place.    This   is   called collocated control. You  代 写ECE-242 Applied Feedback Controls Homework 7 Winter 2025Matlab
+代做程序编程语言 should   have   observed   that   the   high   frequency   poles   tended   to   have   zeros   close   by   that caused the poles to move in favorable   (stabilizing) directions when you   cranked   up   the   gain.   This   is   typically   the   case   for   collocated   control.   What happens when   the   sensor   and   the   actuator   are   not   in   the   same   place?   This   is non-collocated control,   and   it   gets   harder.   The   rotational   dynamics   of the   entire   satellite   system,   aft   thrusters to fore angle, can be represented by the following   transfer   function   (this   is   the   hard   one):
+where:
+
+Again, revisiting the controller design that we did   in   HW   6:
+a)      Design   a   new   compensator, D3   (s), that   uses   a   lead   and   notch   for   the   non-collocated   system.   The   notch zeros   should   be “near” the   poles   of   the   first   resonant   mode   of   the   uncompensated   system   (i.e.: near ωp1),   but do not cancel them.   Experiment   (in MATLAB) with where to put them, remembering that the exact   location of these poles   are unknown.   Try to be   robust.   Also,   experiment with   where   to   place   the   poles   of   the   notch,   and   see   how   that   affects   the   system.   See   if   you   can   match   the   performance   of   the   system in   6− 1(a), i.e.:   closed-loop   bandwidth   of   2π   and   a   phase   margin   of   55。 (you   might   not   be   able   to   make it).
+b)   Use DiscoveryFore.mdl to simulate the system with your new controller.
+c)      Once   you   are   happy   with   your   design   for   D3   (s),   go   ahead   and   digitize   it   using   Tustin   for   a   range   of   sample   rates.    Again,    see   how   slow   you   can   go   and   still   get   decent   performance.      Simulate   using DiscoveryForeDiscrete.mdl, and show your results   (clearly and well reasoned, please).
+d)    Redesign   a   new   compensator,   D4   (s), using   the   linear   phase   offset   to   compensate   for   the   sample   delay,   and   see   how   much   better   you   do   than   in   part   (c).
+e)      Optional:   Convert   Gfore   (s) into   Gfore   (z) using a   ZOH transformation   (use   MATLAB),   and   redesign   in   the   z-domain.   See   what   kind   of   performance   you   can   achieve   in   terms   of   bandwidth   and   phase   margin,   along   with   how   slow   you   can   sample.Note:   use anything that MATLAB has to offer here, and   use   this   “lab”   as   an   opportunity to   stretch yourself in   terms   of understanding   the   material.   While this   is   still   a   fairly canned   exercise,   it   is   much   closer to   the   real   world   than   anything   else   you   have   done.   See   how   robust   your   designs   are, what   happens   if   you   are   off   on   your pole locations   (if you really want to be adventurous,   do   a   root   locus based   on   a   scaling   of the   pole   locations,   and   see   what   happens). Again, the   more   you   put   into   this, the   more   you   will   get   out   of   it.   Don’t   fail   your   other classes, but   definitely   use   this   opportunity   to   learn   as   much   as   you   can.
+Review 
+Take   the   time   to   play   with   this   system, and   see   what   you   can   get   it   to   do. You   are   free   to   design   more   complex   controllers, and get a feel for   controlling   a   more   difficult   system.
+
+         
+加QQ：99515681  WX：codinghelp  Email: 99515681@qq.com
